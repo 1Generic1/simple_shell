@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#define MAX_CMD_LEN 256
+#define MAX_ARGS 1
+
+char *get_path(char *cmd)
+{
+	char *path_env = getenv("PATH"); /* Get the PATH environment variable */
+	char *path = strtok(path_env, ":"); /* Tokenize the PATH variable by ':' */
+	char *full_path = NULL;
+	while (path != NULL)
+	{
+		full_path = malloc(strlen(path) + strlen(cmd) + 2); /* Allocate memory for the full path */
+		sprintf(full_path, "%s/%s", path, cmd); /* Concatenate the directory path and the command */
+		if (access(full_path, X_OK) == 0) /* Check if the file is executable */
+			return full_path; /* Return the full path if the file is executable */
+		free(full_path); /* Free the memory if the file is not executable */
+		path = strtok(NULL, ":"); /* Get the next directory in PATH */
+	}
+	return NULL; /* Return NULL if the command is not found in any directory listed in PATH */
+}
+
+/**
+ * execute_shell_command - Execute a shell command
+ * @cmd: The command to execute
+ */
+void execute_shell_command(char *cmd)
+{
+	pid_t child_pid;
+	int status;
+
+	child_pid = fork(); /* Fork a child process */
+
+	if (child_pid == 0) /* Child process */
+	{
+		char *full_path = get_path(cmd); /* Get the full path of the command */
+		if (full_path == NULL)
+		{
+			printf("Error: Command not found\n");
+			exit(EXIT_FAILURE);
+		}
+		char *args[MAX_ARGS + 1];
+		args[0] = full_path;
+		args[1] = NULL; /* Null-terminate the argument list */
+		execve(full_path, args, NULL); /* Execute the command */
+		perror("Error"); /* Print error message if execve fails */
+		exit(EXIT_FAILURE);
+	}
+	else if (child_pid < 0) /* Forking failed */
+	{
+		perror("Error");
+		exit(EXIT_FAILURE);
+	}
+	else /* Parent process */
+	{
+		wait(&status); /* Wait for the child process to finish */
+	}
+}
+
