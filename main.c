@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define MAX_INPUT_LENGTH 256
 
@@ -11,7 +13,7 @@
  */
 void display_prompt(void)
 {
-    printf("$ "); // Display a simple prompt
+    printf("$ "); /* Display a simple prompt */
 }
 
 /**
@@ -40,7 +42,7 @@ bool is_env_command(char *command)
  */
 void execute_command(char *command)
 {
-    pid_t pid = fork(); // Fork a child process
+    pid_t pid = fork(); /* Fork a child process */
 
     if (pid == -1)
     {
@@ -49,16 +51,16 @@ void execute_command(char *command)
     }
     else if (pid == 0)
     {
-        // Child process
-        execlp(command, command, NULL); // Execute the command in the child process
+        /* Child process */
+        execlp(command, command, NULL); /* Execute the command in the child process */
         perror("exec");
         exit(EXIT_FAILURE);
     }
     else
     {
-        // Parent process
+        /* Parent process */
         int status;
-        wait(&status); // Wait for the child process to finish
+        wait(&status); /* Wait for the child process to finish */
     }
 }
 
@@ -72,39 +74,38 @@ int main(void)
 
     while (true)
     {
-        display_prompt(); // Display the prompt
+        display_prompt(); /* Display the prompt */
 
         if (fgets(input, MAX_INPUT_LENGTH, stdin) == NULL)
         {
-            // Handle end of file (Ctrl+D)
+            /* Handle end of file (Ctrl+D) */
             printf("\n");
             break;
         }
 
-        input[strcspn(input, "\n")] = '\0'; // Remove trailing newline
+        input[strcspn(input, "\n")] = '\0'; /* Remove trailing newline */
 
         if (strlen(input) == 0)
         {
-            // Empty input, display prompt again
+            /* Empty input, display prompt again */
             continue;
         }
 
         if (is_exit_command(input))
         {
-            // Exit command entered, exit the shell
+            /* Exit command entered, exit the shell */
             break;
         }
 
         if (is_env_command(input))
         {
-            // Env command entered, print the current environment
+            /* Env command entered, print the current environment */
             system("env");
             continue;
         }
 
-        execute_command(input); // Execute the entered command
+        execute_command(input); /* Execute the entered command */
     }
 
     return 0;
 }
-
