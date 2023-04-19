@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
+#include "shell.h"
 #define MAX_CMD_LEN 256
 #define MAX_ARGS 1
 
@@ -15,38 +15,6 @@ void display_shell_prompt(void)
 {
 	printf("$ "); /* Display a simple prompt */
 }
-
-/**
- * execute_shell_command - Execute a shell command
- * @cmd: The command to execute
- */
-void execute_shell_command(char *cmd)
-{
-	pid_t child_pid;
-	int status;
-
-	child_pid = fork(); /* Fork a child process */
-
-	if (child_pid == 0) /* Child process */
-	{
-		char *args[MAX_ARGS + 1];
-		args[0] = cmd;
-		args[1] = NULL; /* Null-terminate the argument list */
-		execve(cmd, args, NULL); /* Execute the command */
-		perror("Error"); /* Print error message if execve fails */
-		exit(EXIT_FAILURE);
-	}
-	else if (child_pid < 0) /* Forking failed */
-	{
-		perror("Error");
-		exit(EXIT_FAILURE);
-	}
-	else /* Parent process */
-	{
-		wait(&status); /* Wait for the child process to finish */
-	}
-}
-
 /**
  * main - Entry point of the shell command line interpreter
  *
@@ -55,6 +23,7 @@ void execute_shell_command(char *cmd)
 int main(void)
 {
 	char cmd[MAX_CMD_LEN];
+	int exit_shell = 0;
 
 	while (1)
 	{
@@ -75,9 +44,8 @@ int main(void)
 
 		cmd[strcspn(cmd, "\n")] = '\0'; /* Remove trailing newline character */
 
-		execute_shell_command(cmd); /* Execute the command */
+		execute_shell_command(cmd, &exit_shell); /* Execute the command */
 	}
 
 	return 0;
 }
-
