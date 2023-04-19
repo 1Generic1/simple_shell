@@ -1,111 +1,83 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define MAX_INPUT_LENGTH 256
+#define MAX_CMD_LEN 256
+#define MAX_ARGS 1
 
 /**
- * display_prompt - Displays the shell prompt
+ * display_shell_prompt - Display a simple shell prompt
  */
-void display_prompt(void)
+void display_shell_prompt(void)
 {
-    printf("$ "); /* Display a simple prompt */
+	printf("$ "); /* Display a simple prompt */
 }
 
 /**
- * is_exit_command - Checks if the entered command is "exit"
- * @command: The entered command
- * Return: true if the command is "exit", false otherwise
+ * execute_shell_command - Execute a shell command
+ * @cmd: The command to execute
  */
-bool is_exit_command(char *command)
+void execute_shell_command(char *cmd)
 {
-    return strcmp(command, "exit") == 0;
+	pid_t child_pid;
+	int status;
+
+	child_pid = fork(); /* Fork a child process */
+
+	if (child_pid == 0) /* Child process */
+	{
+		char *args[MAX_ARGS + 1];
+		args[0] = cmd;
+		args[1] = NULL; /* Null-terminate the argument list */
+		execve(cmd, args, NULL); /* Execute the command */
+		perror("Error"); /* Print error message if execve fails */
+		exit(EXIT_FAILURE);
+	}
+	else if (child_pid < 0) /* Forking failed */
+	{
+		perror("Error");
+		exit(EXIT_FAILURE);
+	}
+	else /* Parent process */
+	{
+		wait(&status); /* Wait for the child process to finish */
+	}
 }
 
 /**
- * is_env_command - Checks if the entered command is "env"
- * @command: The entered command
- * Return: true if the command is "env", false otherwise
- */
-bool is_env_command(char *command)
-{
-    return strcmp(command, "env") == 0;
-}
-
-/**
- * execute_command - Executes the entered command
- * @command: The entered command
- */
-void execute_command(char *command)
-{
-    pid_t pid = fork(); /* Fork a child process */
-
-    if (pid == -1)
-    {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
-    else if (pid == 0)
-    {
-        /* Child process */
-        execlp(command, command, NULL); /* Execute the command in the child process */
-        perror("exec");
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        /* Parent process */
-        int status;
-        wait(&status); /* Wait for the child process to finish */
-    }
-}
-
-/**
- * main - Entry point for the shell
+ * main - Entry point of the shell command line interpreter
+ *
  * Return: 0 on success
  */
 int main(void)
 {
-    char input[MAX_INPUT_LENGTH];
+	char cmd[MAX_CMD_LEN];
 
-    while (true)
-    {
-        display_prompt(); /* Display the prompt */
+	while (1)
+	{
+		display_shell_prompt(); /* Display the prompt */
+		if (fgets(cmd, MAX_CMD_LEN, stdin) == NULL) /* Read command from stdin */
+		{
+			if (feof(stdin)) /* End of file condition (Ctrl+D) */
+			{
+				printf("\n");
+				exit(EXIT_SUCCESS);
+			}
+			else
+			{
+				perror("Error");
+				exit(EXIT_FAILURE);
+			}
+		}
 
-        if (fgets(input, MAX_INPUT_LENGTH, stdin) == NULL)
-        {
-            /* Handle end of file (Ctrl+D) */
-            printf("\n");
-            break;
-        }
+		cmd[strcspn(cmd, "\n")] = '\0'; /* Remove trailing newline character */
 
-        input[strcspn(input, "\n")] = '\0'; /* Remove trailing newline */
+		execute_shell_command(cmd); /* Execute the command */
+	}
 
-        if (strlen(input) == 0)
-        {
-            /* Empty input, display prompt again */
-            continue;
-        }
-
-        if (is_exit_command(input))
-        {
-            /* Exit command entered, exit the shell */
-            break;
-        }
-
-        if (is_env_command(input))
-        {
-            /* Env command entered, print the current environment */
-            system("env");
-            continue;
-        }
-
-        execute_command(input); /* Execute the entered command */
-    }
-
-    return 0;
+	return 0;
 }
+
