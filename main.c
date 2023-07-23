@@ -25,7 +25,7 @@ int main(void)
 	char cmd[MAX_CMD_LEN];
 	int exit_shell = 0;
 
-	while (1)
+	while (!exit_shell)
 	{
 		display_shell_prompt(); /* Display the prompt */
 		if (fgets(cmd, MAX_CMD_LEN, stdin) == NULL) /* Read command from stdin */
@@ -43,8 +43,7 @@ int main(void)
 		}
 
 		cmd[strcspn(cmd, "\n")] = '\0'; /* Remove trailing newline character */
-
-		execute_shell_command(cmd, &exit_shell); /* Execute the command */
+		execute_shell_command(custom_tokenize(cmd), &exit_shell); /* Execute the command */
 	}
 
 	return 0;
