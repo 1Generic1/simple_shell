@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include "shell.h"
 #include <unistd.h>
+#include <ctype.h> 
 
 #define MAX_CMD_LEN 256
 #define MAX_ARGS 1
@@ -24,6 +25,18 @@ char *get_path(const char *cmd)
 			{	
 				return ("builtin");
 			}
+	if (strcmp(cmd, "setenv") == 0)
+	{
+		return ("builtin");
+	}
+	if (strcmp(cmd, "unsetenv") == 0)
+	{
+		return ("builtin");
+	}
+	if (strcmp(cmd, "cd") == 0)
+	{
+		return ("builtin");
+	}
 	printf("PATH Environment Variable: %s\n", path_env_copy);
 	printf("Command received by get_path: %s\n", cmd);
 	while (path != NULL)
@@ -74,6 +87,8 @@ void execute_shell_command(char **args, int *exit_shell)
     int dir_index = 0;
     char *path;
     int i;
+    int exit_status;
+
 
     printf("Command: %s\n", args[0]);
 
@@ -88,9 +103,53 @@ void execute_shell_command(char **args, int *exit_shell)
 
     if (strcmp(args[0], "exit") == 0)
     {
-        *exit_shell = 1; /* Set the exit shell flag */
-        return;
+	    if (args[1] != NULL)
+	    {
+		    i = 0;
+		    while (args[1][i] != '\0')
+		    {
+			    if (!isdigit(args[1][i]))
+			    {
+				    fprintf(stderr, "Error: Invalid exit status\n");
+				    return;
+			    }
+			    i++;
+		    }
+		    exit_status = atoi(args[1]);
+		    exit(exit_status);
+	    }
+	    else
+	    {
+        	*exit_shell = 1; /* Set the exit shell flag */
+	    }
+	    return;
     }
+    else if (strcmp(args[0], "setenv") == 0)
+    {
+	    if (args[1] == NULL || args[2] == NULL)
+	    {
+		    fprintf(stderr, "Usage: setenv VARIABLE VALUE\n");
+		    return;
+	    }
+	    my_setenv(args[1], args[2]);
+	    return;
+    }
+	else if (strcmp(args[0], "unsetenv") == 0)
+	{
+		if (args[1] == NULL)
+		{
+			fprintf(stderr, "Usage: unsetenv VARIABLE\n");
+			return;
+		}
+		my_unsetenv(args[1]);
+		return;
+	}
+	else if (strcmp(args[0], "cd") == 0)
+	{
+		/* call cd_builtin function to handle cd command */
+		cd_builtin(args);
+		return;
+	}
     else if (strcmp(args[0], "env") == 0)
     {
         /* Print the environment variables */
