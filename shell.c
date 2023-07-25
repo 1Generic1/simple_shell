@@ -24,26 +24,33 @@ int main(void)
 {
 	char cmd[MAX_CMD_LEN];
 	int exit_shell = 0;
+	char *line;
 
 	while (!exit_shell)
 	{
 		display_shell_prompt(); /* Display the prompt */
-		if (fgets(cmd, MAX_CMD_LEN, stdin) == NULL) /* Read command from stdin */
+	
+		line = my_getline();
+		if (line == NULL)
 		{
-			if (feof(stdin)) /* End of file condition (Ctrl+D) */
+			if (feof(stdin))
 			{
-				printf("\n");
-				exit(EXIT_SUCCESS);
+			printf("\n");
+			exit(EXIT_SUCCESS);
 			}
 			else
 			{
-				perror("Error");
+				perror("my_getline");
 				exit(EXIT_FAILURE);
 			}
-		}
-
-		cmd[strcspn(cmd, "\n")] = '\0'; /* Remove trailing newline character */
-		execute_shell_command(custom_tokenize(cmd), &exit_shell); /* Execute the command */
+		} 
+		strncpy(cmd, line, MAX_CMD_LEN - 1);
+		cmd[MAX_CMD_LEN - 1] = '\0';
+		free(line);
+		
+		/* Execute the command(s) */
+		execute_multiple_commands(cmd, &exit_shell);
+		/* execute_shell_command(custom_tokenize(cmd), &exit_shell);*/ /* Execute the command */
 	}
 
 	return 0;

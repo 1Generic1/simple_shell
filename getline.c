@@ -11,71 +11,50 @@
  * Return: A dynamically allocated string containing the input line
  */
 
-char *my_getline()
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_INPUT_LEN 1024
+
+char *my_getline(void)
 {
-	static char buffer[MAX_INPUT_LEN];
-	static int buffer_len = 0;
-	static int buffer_position = 0;
-	char *line = NULL;
-	int line_len = 0;
-	char c = buffer[buffer_position++];
+	char buffer[MAX_INPUT_LEN];
+	int buffer_len = 0;
+	char c;
+	char *line;
+	int i;
 
 	while (1)
 	{
-		if (buffer_position == buffer_len)
-		{
-			/* if buffer is empty, read data from stdin */
-		buffer_len = read(STDIN_FILENO, buffer, MAX_INPUT_LEN);
-		if (buffer_len == -1)
-		{
-			perror("read");
-			exit(EXIT_FAILURE);
-		}
-		buffer_position = 0;
-		}
+		c = getchar();
 
-		if (buffer_len == 0)
+		if (c == EOF || c == '\n')
 		{
-			/* end of input */
-			if (line_len == 0)
-			{
-				return (NULL);
-			}
-			else
-			{
-				break;
-			}
-		}
-		if (c == '\n')
-		{
-			buffer_position--;
 			break;
 		}
-		/* append character to line */
-		if (line_len == 0)
+
+		buffer[buffer_len++] = c;
+		if (buffer_len >= MAX_INPUT_LEN)
 		{
-			line = malloc(1);
+			/* Buffer overflow prevention */
+			break;
 		}
-		else
-		{
-			line = realloc(line, line_len + 1);
-		}
-		if (!line)
-		{
-			perror("malloc/realloc");
-			exit(EXIT_FAILURE);
-		}
-		line[line_len++] = c;
 	}
-	if (line)
+
+	if (buffer_len == 0 && c == EOF)
+	{	
+		return NULL;
+	}
+	line = malloc(buffer_len + 1);
+	if (line == NULL)
 	{
-		line = realloc(line, line_len + 1);
-		if (!line)
-		{
-			perror("realloc");
-			exit(EXIT_FAILURE);
-		}
-		line[line_len] = '\0';
+		perror("malloc");
+		exit(EXIT_FAILURE);
 	}
-	return (line);
+	for (i = 0; i < buffer_len; i++)
+	{
+		line[i] = buffer[i];
+	}
+	line[buffer_len] = '\0';
+	return line;
 }
