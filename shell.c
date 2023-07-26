@@ -50,7 +50,7 @@ int main(void)
 		
 		/* Execute the command(s) */
 		execute_multiple_commands(cmd, &exit_shell);
-		/* execute_shell_command(custom_tokenize(cmd), &exit_shell);*/ /* Execute the command */
+
 	}
 
 	return 0;
