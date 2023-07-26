@@ -13,7 +13,7 @@
  */
 void display_shell_prompt(void)
 {
-	printf("$ "); /* Display a simple prompt */
+	printf("($) "); /* Display a simple prompt */
 }
 /**
  * main - Entry point of the shell command line interpreter
