@@ -166,13 +166,13 @@ void execute_shell_command(char **args, int *exit_shell)
         while (dirs[dir_index] != NULL)
         {
             snprintf(cmd_path, MAX_CMD_LEN, "%s", dirs[dir_index]);
-            i = 0;
+           /* i = 0;
             while (args[i] != NULL)
             {
                 printf("%s ", args[i]);
                 i++;
             }
-            printf("\n");
+            printf("\n"); */
 
             if (access(cmd_path, X_OK) == 0)
             {
