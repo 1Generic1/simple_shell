@@ -220,5 +220,4 @@ void execute_shell_command(char **args, int *exit_shell)
         }
     }
     free(path_copy);
-    free(dirs);
 }
