@@ -235,4 +235,5 @@ void execute_shell_command(char **args, int *exit_shell)
         printf("Command not found: %s\n", args[0]);
     }
     free(path_copy);
+    free(dirs);
 }

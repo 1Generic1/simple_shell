@@ -61,5 +61,6 @@ char **custom_tokenize(char *cmd)
 			break;
 	}
 	tokens[arg_count] = NULL;
+	free (tokens);
 	return (tokens);
 }
