@@ -37,8 +37,8 @@ char *get_path(const char *cmd)
 	{
 		return ("builtin");
 	}
-	printf("PATH Environment Variable: %s\n", path_env_copy);
-	printf("Command received by get_path: %s\n", cmd);
+	/* printf("PATH Environment Variable: %s\n", path_env_copy);
+	printf("Command received by get_path: %s\n", cmd); */
 	while (path != NULL)
 	{	
 		path_len = strlen(path);
@@ -62,7 +62,7 @@ char *get_path(const char *cmd)
 					snprintf(full_path, path_len + strlen(cmd) + 2, "%s/%s", path, cmd);
 	       	/* Concatenate the directory path and the command */
 		}
-		printf("Checking path: %s\n", full_path);
+		/* printf("Checking path: %s\n", full_path); */
 		if (access(full_path, X_OK) == 0) /* Check if the file is executable */
 			{
 				free(path_env_copy);
@@ -90,7 +90,7 @@ void execute_shell_command(char **args, int *exit_shell)
     int exit_status;
 
 
-    printf("Command: %s\n", args[0]);
+  /*  printf("Command: %s\n", args[0]); */
 
     path = get_path(args[0]);
     if (path == NULL)
@@ -98,8 +98,8 @@ void execute_shell_command(char **args, int *exit_shell)
         printf("Error: PATH variable not set\n");
         return;
     }
-    printf("Full command path: %s\n", path);
-    printf("PATH Environment Variable: %s\n", getenv("PATH"));
+/*    printf("Full command path: %s\n", path); 
+    printf("PATH Environment Variable: %s\n", getenv("PATH")); */
 
     if (strcmp(args[0], "exit") == 0)
     {
@@ -175,8 +175,8 @@ void execute_shell_command(char **args, int *exit_shell)
         {
             snprintf(cmd_path, MAX_CMD_LEN, "%s", dirs[dir_index]);
             /* debug statement */
-            printf("Executing command: %s\n", cmd_path);
-            printf("With arguments: ");
+            /* printf("Executing command: %s\n", cmd_path);
+            printf("With arguments: "); */
             i = 0;
             while (args[i] != NULL)
             {
@@ -196,7 +196,7 @@ void execute_shell_command(char **args, int *exit_shell)
                 }
                 else if (pid == 0)
                 {
-                    printf("Executing command: %s\n", cmd_path);
+                  /*  printf("Executing command: %s\n", cmd_path); */
                     execv(cmd_path, args);
                     perror("execv");
                     exit(EXIT_FAILURE);
@@ -231,8 +231,8 @@ void execute_shell_command(char **args, int *exit_shell)
             dir_index++;
         }
         /* debug statement */
-        printf("PATH Environment Variable: %s\n", path);
-        printf("Command not found: %s\n", args[0]);
+       /* printf("PATH Environment Variable: %s\n", path);
+        printf("Command not found: %s\n", args[0]); */
     }
     free(path_copy);
     free(dirs);
