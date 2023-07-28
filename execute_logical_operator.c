@@ -44,7 +44,7 @@ int execute_logical_operator(const char *sub_cmd, bool *exit_shell)
 	 execute_shell_command(custom_tokenize(sub_cmd_copy), &exit_shell_int);
 	if ((status == 0 && and_operator) || (status != 0 && or_operator))
 	{
-		exit_shell = false;
+		*exit_shell = false;
 	}
 	return (status);
 }

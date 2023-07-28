@@ -8,8 +8,8 @@
 #include <unistd.h>
 #include <ctype.h> 
 
-#define MAX_CMD_LEN 256
-#define MAX_ARGS 1
+#define MAX_CMD_LEN 20
+#define MAX_ARGS 10
 extern char **environ;
 
 char *get_path(const char *cmd)
@@ -144,7 +144,7 @@ void execute_shell_command(char **args, int *exit_shell)
 	}
     else if (strcmp(args[0], "env") == 0)
     {
-        /* Print the environment variables */
+       /*  Print the environment variables */
         char **env = environ;
         while (*env)
         {
@@ -155,12 +155,12 @@ void execute_shell_command(char **args, int *exit_shell)
     else
     {
         /* Check if the command exists in the PATH */
-        path = get_path(args[0]);
+        /* path = get_path(args[0]);
         if (path == NULL)
         {
             printf("Error: PATH variable not set\n");
             return;
-        }
+        } */
         path_copy = strdup(path);
         dirs = custom_tokenize(path_copy);
         while (dirs[dir_index] != NULL)
@@ -210,7 +210,8 @@ void execute_shell_command(char **args, int *exit_shell)
                     {
                         int signal_num = WSTOPSIG(status);
                         printf("Command '%s' stopped by signal %d\n", args[0], signal_num);
-                    }
+                    } 
+			return;
                 }
                 free(path_copy);
                 free(dirs);
