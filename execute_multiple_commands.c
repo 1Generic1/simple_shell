@@ -16,7 +16,7 @@ void execute_multiple_commands(char *cmd, int *exit_shell)
 	int num_commands = 0;
 	char *ptr;
 	char **command_args;
-
+	int j;
 	/* spilt the input command by ';' manually */
 	for (ptr = cmd; *ptr != '\0'; ptr++)
 	{
@@ -57,7 +57,12 @@ void execute_multiple_commands(char *cmd, int *exit_shell)
 	{
 		command_args = custom_tokenize(commands[i]);
 		execute_shell_command(command_args, exit_shell);
+		for (j = 0; command_args[j] != NULL; j++)
+		{
+			free(command_args[j]);
+		}
 		free(command_args);
+		i++;
 	}
 	free(commands);
 }

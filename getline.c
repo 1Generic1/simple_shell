@@ -34,9 +34,12 @@ char *my_getline(void)
 		}
 
 		buffer[buffer_len++] = c;
-		if (buffer_len >= MAX_INPUT_LEN)
+		if (buffer_len >= MAX_INPUT_LEN - 1)
 		{
 			/* Buffer overflow prevention */
+			fprintf(stderr, "input line too long\n");
+			while ((c = getchar()) != '\n' && c != EOF)
+				;
 			break;
 		}
 	}

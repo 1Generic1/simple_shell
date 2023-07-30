@@ -24,6 +24,8 @@ char **custom_tokenize(char *cmd)
 	int start = 0;
 	int end;
 	int token_len;
+/*	tokens[arg_count] = NULL; */
+	/*int j; */
 
 	tokens = malloc((MAX_ARGS + 1) * sizeof(char *)); /* Allocate memory for tokens */
 	if (!tokens)
@@ -60,6 +62,10 @@ char **custom_tokenize(char *cmd)
 		if (arg_count >= MAX_ARGS)
 			break;
 	}
-	tokens[arg_count] = NULL;
+/*	for (j = 0; j < arg_count; j++)
+    {
+        free(tokens[j]);
+    }
+*/
 	return (tokens);
 }

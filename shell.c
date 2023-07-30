@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "shell.h"
-#define MAX_CMD_LEN 20
+#define MAX_CMD_LEN 1024
 #define MAX_ARGS 1
 
 /**
@@ -56,8 +56,6 @@ if (line_len > 0 && line[line_len - 1] == '\n') {
 		
 		/* Execute the command(s) */
 		execute_multiple_commands(cmd, &exit_shell);
-
 	}
-
 	return 0;
 }

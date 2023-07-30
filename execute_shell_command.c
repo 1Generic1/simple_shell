@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <ctype.h> 
 
-#define MAX_CMD_LEN 20
+#define MAX_CMD_LEN 1024
 #define MAX_ARGS 10
 extern char **environ;
 
@@ -23,18 +23,22 @@ char *get_path(const char *cmd)
 	
 	if (strcmp(cmd, "exit") == 0)
 			{	
+				free(full_path);
 				return ("builtin");
 			}
 	if (strcmp(cmd, "setenv") == 0)
 	{
+		free(full_path);
 		return ("builtin");
 	}
 	if (strcmp(cmd, "unsetenv") == 0)
 	{
+		free(full_path);
 		return ("builtin");
 	}
 	if (strcmp(cmd, "cd") == 0)
 	{
+		free(full_path);
 		return ("builtin");
 	}
 	while (path != NULL)
@@ -69,6 +73,8 @@ char *get_path(const char *cmd)
 		path = strtok(NULL, ":"); /* Get the next directory in PATH */
 	}
 	free(path_env_copy);
+	free (path_copy);
+	free(full_path);
 	return NULL; /* Return NULL if the command is not found in any directory listed in PATH */
 }
 /**
@@ -213,12 +219,16 @@ void execute_shell_command(char **args, int *exit_shell)
                     } 
 			return;
                 }
-                free(path_copy);
-                free(dirs);
                 return;
             }
             dir_index++;
         }
     }
     free(path_copy);
+    free(dirs);
+    for (i = 0; args[i] != NULL; i++)
+    {
+	    free(args[i]);
+    }
+    free(args);
 }
